@@ -225,20 +225,19 @@
         SCDLog(@"cropFrame:%@", [NSValue valueWithCGRect:cropFrame]);
         UIImage *croppedImage = [scaledImage croppedImage:cropFrame];
         SCDLog(@"croppedImage:%@", [NSValue valueWithCGSize:croppedImage.size]);
-        
+        croppedImage = image;
         
         UIDeviceOrientation orientation = [UIDevice currentDevice].orientation;
         if (orientation != UIDeviceOrientationPortrait) {
             
-            CGFloat degree = 0;
             if (orientation == UIDeviceOrientationPortraitUpsideDown) {
-                degree = 180;// M_PI;
+                croppedImage = [UIImage imageWithCGImage:croppedImage.CGImage scale:croppedImage.scale orientation:UIImageOrientationLeft];
             } else if (orientation == UIDeviceOrientationLandscapeLeft) {
-                degree = -90;// -M_PI_2;
+                croppedImage = [UIImage imageWithCGImage:croppedImage.CGImage scale:croppedImage.scale orientation:UIImageOrientationUp];
             } else if (orientation == UIDeviceOrientationLandscapeRight) {
-                degree = 90;// M_PI_2;
+                croppedImage = [UIImage imageWithCGImage:croppedImage.CGImage scale:croppedImage.scale orientation:UIImageOrientationDown];
             }
-            croppedImage = [croppedImage rotatedByDegrees:degree];
+            //croppedImage = [croppedImage rotatedByDegrees:degree];
         }
         
 //        self.imageView.image = croppedImage;

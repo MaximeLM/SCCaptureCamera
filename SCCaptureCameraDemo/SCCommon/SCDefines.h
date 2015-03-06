@@ -20,7 +20,7 @@
 
 
 // Debug Logging
-#if 1 // Set to 1 to enable debug logging
+#if 0 // Set to 1 to enable debug logging
 #define SCDLog(x, ...) NSLog(x, ## __VA_ARGS__);
 #else
 #define SCDLog(x, ...)

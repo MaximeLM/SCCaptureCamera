@@ -123,16 +123,16 @@
 
   //AvcaptureManager
   if (CGRectEqualToRect(_previewRect, CGRectZero)) {
-    self.previewRect = CGRectMake(0, CAMERA_TOPVIEW_HEIGHT, SC_APP_SIZE.width, SC_APP_SIZE.width);
+    self.previewRect = CGRectMake(0, 0, SC_APP_SIZE.width, SC_APP_SIZE.height);
   }
   [manager configureWithParentLayer:self.view previewRect:_previewRect];
   self.captureManager = manager;
 
-  [self addTopView];
-  [self addbottomContainerView];
+  //[self addTopView];
+  //[self addbottomContainerView];
   [self addCameraMenuView];
 //  [self addFocusView];
-  [self addCameraCover];
+//  [self addCameraCover];
 //  [self addPinchGesture];
 
   [_captureManager.session startRunning];
@@ -251,20 +251,20 @@
 
   //拍照按钮
   CGFloat cameraBtnLength = 80;
-  [self buildButton:CGRectMake((SC_APP_SIZE.width - cameraBtnLength) / 2, (_bottomContainerView.frame.size.height - cameraBtnLength)/2 , cameraBtnLength, cameraBtnLength)
+  [self buildButton:CGRectMake((SC_APP_SIZE.width - cameraBtnLength) / 2, SC_APP_SIZE.height - cameraBtnLength - 8.0 , cameraBtnLength, cameraBtnLength)
        normalImgStr:@"shot.png"
     highlightImgStr:@"shot_h.png"
      selectedImgStr:@""
              action:@selector(takePictureBtnPressed:)
-         parentView:_bottomContainerView];
+         parentView:self.view];
 
-  CGFloat albumBtnWidth = 40;
+  /*CGFloat albumBtnWidth = 40;
   _albumBtn = [self buildButton:CGRectMake(((SC_APP_SIZE.width - cameraBtnLength) / 2 - albumBtnWidth)/2, (_bottomContainerView.frame.size.height - albumBtnWidth)/2, albumBtnWidth, albumBtnWidth)
                    normalImgStr:@"take_photo_picture_default.png"
                 highlightImgStr:nil
                  selectedImgStr:nil
                          action:@selector(showAlbum)
-                     parentView:_bottomContainerView];
+                     parentView:_bottomContainerView];*/
 }
 
 - (void)showAlbum {
@@ -539,6 +539,10 @@ void c_slideAlpha() {
     if ([nav.scNaigationDelegate respondsToSelector:@selector(didTakePicture:image:)]) {
       [nav.scNaigationDelegate didTakePicture:nav image:stillImage];
     }
+      
+      if ([self.delegate respondsToSelector:@selector(didTakePicture:image:)]) {
+          [self.delegate didTakePicture:self image:stillImage];
+      }
   }];
 }
 
