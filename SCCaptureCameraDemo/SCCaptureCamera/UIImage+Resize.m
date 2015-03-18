@@ -67,7 +67,7 @@
             break;
             
         default:
-            [NSException raise:NSInvalidArgumentException format:@"Unsupported content mode: %d", contentMode];
+            [NSException raise:NSInvalidArgumentException format:@"Unsupported content mode"];
     }
     
     CGSize newSize = CGSizeMake(self.size.width * ratio, self.size.height * ratio);
@@ -214,7 +214,7 @@ static inline CGFloat DegreesToRadians(CGFloat degrees)
                                                 8,
                                                 0,
                                                 CGImageGetColorSpace(imageRef),
-                                                kCGImageAlphaNoneSkipLast);
+                                                (CGBitmapInfo)kCGImageAlphaNoneSkipLast);
     
     // Rotate and/or flip the image if required by its orientation
     CGContextConcatCTM(bitmap, transform);

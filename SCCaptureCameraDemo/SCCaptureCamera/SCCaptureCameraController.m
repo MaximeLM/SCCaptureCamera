@@ -9,7 +9,6 @@
 #import "SCCaptureCameraController.h"
 #import "SCSlider.h"
 #import "SCCommon.h"
-#import "SVProgressHUD.h"
 
 #import "SCNavigationController.h"
 #import <AssetsLibrary/AssetsLibrary.h>
@@ -139,7 +138,6 @@
 
 #if SWITCH_SHOW_DEFAULT_IMAGE_FOR_NONE_CAMERA
   if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-    [SVProgressHUD showErrorWithStatus:@"设备不支持拍照功能"];
   }
 #endif
 }
@@ -503,7 +501,6 @@ void c_slideAlpha() {
 - (void)takePictureBtnPressed:(UIButton*)sender {
 #if SWITCH_SHOW_DEFAULT_IMAGE_FOR_NONE_CAMERA
   if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-    [SVProgressHUD showErrorWithStatus:@"设备不支持拍照功能T_T"];
     return;
   }
 #endif
@@ -554,12 +551,12 @@ void c_slideAlpha() {
 - (void)dismissBtnPressed:(id)sender {
   if (self.navigationController) {
     if (self.navigationController.viewControllers.count == 1) {
-      [self.navigationController dismissModalViewControllerAnimated:YES];
+      //[self.navigationController dismissModalViewControllerAnimated:YES];
     } else {
       [self.navigationController popViewControllerAnimated:YES];
     }
   } else {
-    [self dismissModalViewControllerAnimated:YES];
+    //[self dismissModalViewControllerAnimated:YES];
   }
 }
 
