@@ -130,6 +130,7 @@
   //[self addTopView];
   //[self addbottomContainerView];
   [self addCameraMenuView];
+    [self addMenuViewButtons];
 //  [self addFocusView];
 //  [self addCameraCover];
 //  [self addPinchGesture];
@@ -278,17 +279,21 @@
 }
 //菜单栏上的按钮
 - (void)addMenuViewButtons {
-  NSMutableArray *normalArr = [[NSMutableArray alloc] initWithObjects:@"photo_close_icon", @"flashing_off",@"switch_camera",  nil];
-  NSMutableArray *highlightArr = [[NSMutableArray alloc] initWithObjects:@"", @"", @"", nil];
-  NSMutableArray *selectedArr = [[NSMutableArray alloc] initWithObjects:@"", @"", @"", nil];
+  NSMutableArray *normalArr = [[NSMutableArray alloc] initWithObjects:@"flashing_off",@"switch_camera",  nil];
+  NSMutableArray *highlightArr = [[NSMutableArray alloc] initWithObjects:@"", @"", nil];
+  NSMutableArray *selectedArr = [[NSMutableArray alloc] initWithObjects:@"", @"", nil];
+  NSMutableArray *actionArr = [[NSMutableArray alloc] initWithObjects:@"flashBtnPressed:", @"switchCameraBtnPressed:", nil];
 
-  NSMutableArray *actionArr = [[NSMutableArray alloc] initWithObjects:@"dismissBtnPressed:",  @"flashBtnPressed:", @"switchCameraBtnPressed:", nil];
-
-  CGFloat eachW = CAMERA_MENU_VIEW_HEIGH;
-  CGFloat theH = CAMERA_MENU_VIEW_HEIGH;
-  UIView *parent = _topContainerView;
+  UIView *parent = self.view;
   for (int i = 0; i < actionArr.count; i++) {
-    UIButton * btn = [self buildButton:CGRectMake(eachW * i, CAMERA_TOPVIEW_HEIGHT - theH, eachW, theH)
+      CGFloat x;
+      if (i == 0) {
+          x = 8.0;
+      } else {
+          x = SC_APP_SIZE.width - 8.0 - CAMERA_MENU_VIEW_HEIGH;
+      }
+      
+    UIButton * btn = [self buildButton: CGRectMake(x, SC_APP_SIZE.height - CAMERA_MENU_VIEW_HEIGH - 8.0, CAMERA_MENU_VIEW_HEIGH, CAMERA_MENU_VIEW_HEIGH)
                           normalImgStr:[normalArr objectAtIndex:i]
                        highlightImgStr:[highlightArr objectAtIndex:i]
                         selectedImgStr:[selectedArr objectAtIndex:i]

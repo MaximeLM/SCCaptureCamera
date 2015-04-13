@@ -17,6 +17,8 @@
 @property (nonatomic, strong) UIView *preview;
 //@property (nonatomic, strong) UIImageView *imageView;
 
+@property (nonatomic) BOOL isFrontCamera;
+
 @end
 
 @implementation SCCaptureSessionManager
@@ -226,18 +228,34 @@
         UIImage *croppedImage = [scaledImage croppedImage:cropFrame];
         SCDLog(@"croppedImage:%@", [NSValue valueWithCGSize:croppedImage.size]);
         croppedImage = image;
-        
-        UIDeviceOrientation orientation = [UIDevice currentDevice].orientation;
-        if (orientation != UIDeviceOrientationPortrait) {
-            
-            if (orientation == UIDeviceOrientationPortraitUpsideDown) {
-                croppedImage = [UIImage imageWithCGImage:croppedImage.CGImage scale:croppedImage.scale orientation:UIImageOrientationLeft];
+        NSLog(@"isFrontCamera: %d", self.isFrontCamera);
+        if (self.isFrontCamera) {
+            UIDeviceOrientation orientation = [UIDevice currentDevice].orientation;
+            if (orientation == UIDeviceOrientationPortrait) {
+                croppedImage = [UIImage imageWithCGImage:croppedImage.CGImage scale:croppedImage.scale orientation:UIImageOrientationLeftMirrored];
+            } else if (orientation == UIDeviceOrientationPortraitUpsideDown) {
+                croppedImage = [UIImage imageWithCGImage:croppedImage.CGImage scale:croppedImage.scale orientation:UIImageOrientationRightMirrored];
             } else if (orientation == UIDeviceOrientationLandscapeLeft) {
-                croppedImage = [UIImage imageWithCGImage:croppedImage.CGImage scale:croppedImage.scale orientation:UIImageOrientationUp];
+                croppedImage = [UIImage imageWithCGImage:croppedImage.CGImage scale:croppedImage.scale orientation:UIImageOrientationDownMirrored];
             } else if (orientation == UIDeviceOrientationLandscapeRight) {
-                croppedImage = [UIImage imageWithCGImage:croppedImage.CGImage scale:croppedImage.scale orientation:UIImageOrientationDown];
+                croppedImage = [UIImage imageWithCGImage:croppedImage.CGImage scale:croppedImage.scale orientation:UIImageOrientationUpMirrored];
+            } else if (orientation == UIDeviceOrientationFaceDown) {
+                croppedImage = [UIImage imageWithCGImage:croppedImage.CGImage scale:croppedImage.scale orientation:UIImageOrientationLeftMirrored];
+            } else if (orientation == UIDeviceOrientationFaceUp) {
+                croppedImage = [UIImage imageWithCGImage:croppedImage.CGImage scale:croppedImage.scale orientation:UIImageOrientationLeftMirrored];
             }
-            //croppedImage = [croppedImage rotatedByDegrees:degree];
+        } else {
+            UIDeviceOrientation orientation = [UIDevice currentDevice].orientation;
+            if (orientation != UIDeviceOrientationPortrait) {
+                if (orientation == UIDeviceOrientationPortraitUpsideDown) {
+                    croppedImage = [UIImage imageWithCGImage:croppedImage.CGImage scale:croppedImage.scale orientation:UIImageOrientationLeft];
+                } else if (orientation == UIDeviceOrientationLandscapeLeft) {
+                    croppedImage = [UIImage imageWithCGImage:croppedImage.CGImage scale:croppedImage.scale orientation:UIImageOrientationUp];
+                } else if (orientation == UIDeviceOrientationLandscapeRight) {
+                    croppedImage = [UIImage imageWithCGImage:croppedImage.CGImage scale:croppedImage.scale orientation:UIImageOrientationDown];
+                }
+                //croppedImage = [croppedImage rotatedByDegrees:degree];
+            }
         }
         
 //        self.imageView.image = croppedImage;
@@ -277,6 +295,7 @@
     [_session removeInput:_inputDevice];
     
     [self addVideoInputFrontCamera:isFrontCamera];
+    self.isFrontCamera = isFrontCamera;
     
     [_session commitConfiguration];
 }
