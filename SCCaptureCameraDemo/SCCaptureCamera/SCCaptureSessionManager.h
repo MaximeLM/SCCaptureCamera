@@ -12,7 +12,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import "SCDefines.h"
 
-#define MAX_PINCH_SCALE_NUM   3.f
+#define MAX_PINCH_SCALE_NUM   4.f
 #define MIN_PINCH_SCALE_NUM   1.f
 
 @protocol SCCaptureSessionManager;

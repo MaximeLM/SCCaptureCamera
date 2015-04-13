@@ -228,7 +228,7 @@
         UIImage *croppedImage = [scaledImage croppedImage:cropFrame];
         SCDLog(@"croppedImage:%@", [NSValue valueWithCGSize:croppedImage.size]);
         croppedImage = image;
-        NSLog(@"isFrontCamera: %d", self.isFrontCamera);
+        
         if (self.isFrontCamera) {
             UIDeviceOrientation orientation = [UIDevice currentDevice].orientation;
             if (orientation == UIDeviceOrientationPortrait) {

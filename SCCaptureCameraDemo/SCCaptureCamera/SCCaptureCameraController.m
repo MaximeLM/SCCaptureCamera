@@ -131,9 +131,9 @@
   //[self addbottomContainerView];
   [self addCameraMenuView];
     [self addMenuViewButtons];
-//  [self addFocusView];
+  [self addFocusView];
 //  [self addCameraCover];
-//  [self addPinchGesture];
+  [self addPinchGesture];
 
   [_captureManager.session startRunning];
 
@@ -403,7 +403,7 @@
     [weakSelf_SC setSliderAlpha:isTouchEnd];
   }];
 
-  [self.view addSubview:slider];
+  //[self.view addSubview:slider];
 
   self.scSlider = slider;
 }
@@ -463,7 +463,7 @@ void c_slideAlpha() {
 }
 #endif
 
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
 
   //    [super touchesBegan:touches withEvent:event];
 
@@ -475,6 +475,10 @@ void c_slideAlpha() {
   if (CGRectContainsPoint(_captureManager.previewLayer.bounds, currTouchPoint) == NO) {
     return;
   }
+    
+    if ([touches count] != 1) {
+        return;
+    }
 
   [_captureManager focusInPoint:currTouchPoint];
 
