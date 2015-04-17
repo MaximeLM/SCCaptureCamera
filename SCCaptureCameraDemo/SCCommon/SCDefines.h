@@ -52,8 +52,8 @@
 #define SC_DEVICE_BOUNDS    [[UIScreen mainScreen] bounds]
 #define SC_DEVICE_SIZE      [[UIScreen mainScreen] bounds].size
 
-#define SC_APP_FRAME        [[UIScreen mainScreen] applicationFrame]
-#define SC_APP_SIZE         [[UIScreen mainScreen] applicationFrame].size
+#define SC_APP_FRAME        [[UIScreen mainScreen] bounds]
+#define SC_APP_SIZE         [[UIScreen mainScreen] bounds].size
 
 #define SELF_CON_FRAME      self.view.frame
 #define SELF_CON_SIZE       self.view.frame.size
