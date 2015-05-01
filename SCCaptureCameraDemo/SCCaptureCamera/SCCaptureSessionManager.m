@@ -212,61 +212,29 @@
             SCDLog(@"no attachments");
         }
         NSData *imageData = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageDataSampleBuffer];
-        UIImage *image = [[UIImage alloc] initWithData:imageData];
-        SCDLog(@"originImage:%@", [NSValue valueWithCGSize:image.size]);
-//        [SCCommon saveImageToPhotoAlbum:image];
+        UIImage *image = [[[UIImage alloc] initWithData:imageData] fixOrientation];
         
-        CGFloat squareLength = SC_APP_SIZE.width;
-        CGFloat headHeight = _previewLayer.bounds.size.height - squareLength;//_previewLayer的frame是(0, 44, 320, 320 + 44)
-        CGSize size = CGSizeMake(squareLength * 2, squareLength * 2);
+        SCDLog(@"image.size: %@", NSStringFromCGSize(image.size));
+        SCDLog(@"image.CGImage size : %zu %zu", CGImageGetWidth(image.CGImage), CGImageGetHeight(image.CGImage));
         
-        UIImage *scaledImage = [image resizedImageWithContentMode:UIViewContentModeScaleAspectFill bounds:size interpolationQuality:kCGInterpolationHigh];
-        SCDLog(@"scaledImage:%@", [NSValue valueWithCGSize:scaledImage.size]);
+        // Crop image
+        CGFloat previewRatio = _preview.bounds.size.width / _preview.bounds.size.height;
+        CGSize scaledPreviewSize = CGSizeMake(image.size.width, image.size.width / previewRatio);
+        CGFloat verticalInset = (image.size.height - scaledPreviewSize.height) / 2;
+        CGRect cropRect = CGRectMake(0, verticalInset, scaledPreviewSize.width, scaledPreviewSize.height);
+        CGImageRef imageRef = CGImageCreateWithImageInRect([image CGImage], cropRect);
+        image = [UIImage imageWithCGImage:imageRef scale:image.scale orientation:image.imageOrientation];
+        CGImageRelease(imageRef);
         
-        CGRect cropFrame = CGRectMake((scaledImage.size.width - size.width) / 2, (scaledImage.size.height - size.height) / 2 + headHeight, size.width, size.height);
-        SCDLog(@"cropFrame:%@", [NSValue valueWithCGRect:cropFrame]);
-        UIImage *croppedImage = [scaledImage croppedImage:cropFrame];
-        SCDLog(@"croppedImage:%@", [NSValue valueWithCGSize:croppedImage.size]);
-        croppedImage = image;
+        SCDLog(@"cropRect: %@", NSStringFromCGRect(cropRect));
+        SCDLog(@"cropped image.size: %@", NSStringFromCGSize(image.size));
         
-        if (self.isFrontCamera) {
-            UIDeviceOrientation orientation = [UIDevice currentDevice].orientation;
-            if (orientation == UIDeviceOrientationPortrait) {
-                croppedImage = [UIImage imageWithCGImage:croppedImage.CGImage scale:croppedImage.scale orientation:UIImageOrientationLeftMirrored];
-            } else if (orientation == UIDeviceOrientationPortraitUpsideDown) {
-                croppedImage = [UIImage imageWithCGImage:croppedImage.CGImage scale:croppedImage.scale orientation:UIImageOrientationRightMirrored];
-            } else if (orientation == UIDeviceOrientationLandscapeLeft) {
-                croppedImage = [UIImage imageWithCGImage:croppedImage.CGImage scale:croppedImage.scale orientation:UIImageOrientationDownMirrored];
-            } else if (orientation == UIDeviceOrientationLandscapeRight) {
-                croppedImage = [UIImage imageWithCGImage:croppedImage.CGImage scale:croppedImage.scale orientation:UIImageOrientationUpMirrored];
-            } else if (orientation == UIDeviceOrientationFaceDown) {
-                croppedImage = [UIImage imageWithCGImage:croppedImage.CGImage scale:croppedImage.scale orientation:UIImageOrientationLeftMirrored];
-            } else if (orientation == UIDeviceOrientationFaceUp) {
-                croppedImage = [UIImage imageWithCGImage:croppedImage.CGImage scale:croppedImage.scale orientation:UIImageOrientationLeftMirrored];
-            }
-        } else {
-            UIDeviceOrientation orientation = [UIDevice currentDevice].orientation;
-            if (orientation != UIDeviceOrientationPortrait) {
-                if (orientation == UIDeviceOrientationPortraitUpsideDown) {
-                    croppedImage = [UIImage imageWithCGImage:croppedImage.CGImage scale:croppedImage.scale orientation:UIImageOrientationLeft];
-                } else if (orientation == UIDeviceOrientationLandscapeLeft) {
-                    croppedImage = [UIImage imageWithCGImage:croppedImage.CGImage scale:croppedImage.scale orientation:UIImageOrientationUp];
-                } else if (orientation == UIDeviceOrientationLandscapeRight) {
-                    croppedImage = [UIImage imageWithCGImage:croppedImage.CGImage scale:croppedImage.scale orientation:UIImageOrientationDown];
-                }
-                //croppedImage = [croppedImage rotatedByDegrees:degree];
-            }
-        }
-        
-//        self.imageView.image = croppedImage;
-        
-        //block、delegate、notification 3选1，传值
         if (block) {
-            block(croppedImage);
+            block(image);
         } else if ([_delegate respondsToSelector:@selector(didCapturePhoto:)]) {
-            [_delegate didCapturePhoto:croppedImage];
+            [_delegate didCapturePhoto:image];
         } else {
-            [[NSNotificationCenter defaultCenter] postNotificationName:kCapturedPhotoSuccessfully object:croppedImage];
+            [[NSNotificationCenter defaultCenter] postNotificationName:kCapturedPhotoSuccessfully object:image];
         }
     }];
 }
