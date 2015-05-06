@@ -212,12 +212,19 @@
             SCDLog(@"no attachments");
         }
         NSData *imageData = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageDataSampleBuffer];
-        UIImage *image = [[[UIImage alloc] initWithData:imageData] fixOrientation];
+        
+        // Fix the image orientation
+        UIImage *image = [[UIImage alloc] initWithData:imageData];
+        if (!self.isFrontCamera) {
+            image = [image rotateToImageOrientation:UIImageOrientationRight];
+        } else {
+            image = [image rotateToImageOrientation:UIImageOrientationRightMirrored];
+        }
         
         SCDLog(@"image.size: %@", NSStringFromCGSize(image.size));
         SCDLog(@"image.CGImage size : %zu %zu", CGImageGetWidth(image.CGImage), CGImageGetHeight(image.CGImage));
         
-        // Crop image
+        // Crop the image
         CGFloat previewRatio = _preview.bounds.size.width / _preview.bounds.size.height;
         CGSize scaledPreviewSize = CGSizeMake(image.size.width, image.size.width / previewRatio);
         CGFloat verticalInset = (image.size.height - scaledPreviewSize.height) / 2;
@@ -228,6 +235,31 @@
         
         SCDLog(@"cropRect: %@", NSStringFromCGRect(cropRect));
         SCDLog(@"cropped image.size: %@", NSStringFromCGSize(image.size));
+        
+        // Apply rotation according to device orientation
+        UIDeviceOrientation orientation = [UIDevice currentDevice].orientation;
+        UIImageOrientation imageOrientation = image.imageOrientation;
+        switch (orientation) {
+            case UIDeviceOrientationPortraitUpsideDown:
+                SCDLog(@"UIDeviceOrientationPortraitUpsideDown");
+                imageOrientation = UIImageOrientationDown;
+                break;
+            case UIDeviceOrientationLandscapeLeft:
+                SCDLog(@"UIDeviceOrientationLandscapeLeft");
+                imageOrientation = UIImageOrientationLeft;
+                break;
+            case UIDeviceOrientationLandscapeRight:
+                SCDLog(@"UIDeviceOrientationLandscapeRight");
+                imageOrientation = UIImageOrientationLeft;
+                break;
+            default:
+                break;
+        }
+        
+        image = [image rotateToImageOrientation:imageOrientation];
+        
+        SCDLog(@"final image size: %@", NSStringFromCGSize(image.size));
+        SCDLog(@"final image.CGImage size: %zu %zu", CGImageGetWidth(image.CGImage), CGImageGetHeight(image.CGImage));
         
         if (block) {
             block(image);

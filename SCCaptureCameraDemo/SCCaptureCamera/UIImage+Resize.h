@@ -26,7 +26,7 @@
 
 - (CGAffineTransform)transformForOrientation:(CGSize)newSize;
 
-- (UIImage *)fixOrientation;
+- (UIImage *)rotateToImageOrientation:(UIImageOrientation)orient;
 
 - (UIImage *)rotatedByDegrees:(CGFloat)degrees;
 

@@ -7,6 +7,7 @@
 //
 
 #import "UIImage+Resize.h"
+#import "SCDefines.h"
 
 @implementation UIImage (Resize)
 // Returns a copy of this image that is cropped to the given bounds.
@@ -76,7 +77,7 @@
 }
 
 #pragma mark - fix orientation
-- (UIImage *)fixOrientation {
+- (UIImage *)rotateToImageOrientation:(UIImageOrientation)orient  {
     
     CGImageRef imgRef = self.CGImage;
     
@@ -89,29 +90,34 @@
     CGFloat scaleRatio = bounds.size.width / width;
     CGSize imageSize = CGSizeMake(CGImageGetWidth(imgRef), CGImageGetHeight(imgRef));
     CGFloat boundHeight;
-    UIImageOrientation orient = self.imageOrientation;
+    
     switch(orient) {
             
         case UIImageOrientationUp: //EXIF = 1
+            SCDLog(@"UIImageOrientationUp");
             transform = CGAffineTransformIdentity;
             break;
             
         case UIImageOrientationUpMirrored: //EXIF = 2
+            SCDLog(@"UIImageOrientationUpMirrored");
             transform = CGAffineTransformMakeTranslation(imageSize.width, 0.0);
             transform = CGAffineTransformScale(transform, -1.0, 1.0);
             break;
             
         case UIImageOrientationDown: //EXIF = 3
+            SCDLog(@"UIImageOrientationDown");
             transform = CGAffineTransformMakeTranslation(imageSize.width, imageSize.height);
             transform = CGAffineTransformRotate(transform, M_PI);
             break;
             
         case UIImageOrientationDownMirrored: //EXIF = 4
+            SCDLog(@"UIImageOrientationDownMirrored");
             transform = CGAffineTransformMakeTranslation(0.0, imageSize.height);
             transform = CGAffineTransformScale(transform, 1.0, -1.0);
             break;
             
         case UIImageOrientationLeftMirrored: //EXIF = 5
+            SCDLog(@"UIImageOrientationLeftMirrored");
             boundHeight = bounds.size.height;
             bounds.size.height = bounds.size.width;
             bounds.size.width = boundHeight;
@@ -121,6 +127,7 @@
             break;
             
         case UIImageOrientationLeft: //EXIF = 6
+            SCDLog(@"UIImageOrientationLeft");
             boundHeight = bounds.size.height;
             bounds.size.height = bounds.size.width;
             bounds.size.width = boundHeight;
@@ -129,6 +136,7 @@
             break;
             
         case UIImageOrientationRightMirrored: //EXIF = 7
+            SCDLog(@"UIImageOrientationRightMirrored");
             boundHeight = bounds.size.height;
             bounds.size.height = bounds.size.width;
             bounds.size.width = boundHeight;
@@ -137,6 +145,7 @@
             break;
             
         case UIImageOrientationRight: //EXIF = 8
+            SCDLog(@"UIImageOrientationRight");
             boundHeight = bounds.size.height;
             bounds.size.height = bounds.size.width;
             bounds.size.width = boundHeight;
@@ -153,7 +162,7 @@
     
     CGContextRef context = UIGraphicsGetCurrentContext();
     
-    if (orient == UIImageOrientationRight || orient == UIImageOrientationLeft) {
+    if (orient == UIImageOrientationRight || orient == UIImageOrientationLeft || orient == UIImageOrientationRightMirrored || orient == UIImageOrientationLeftMirrored) {
         CGContextScaleCTM(context, -scaleRatio, scaleRatio);
         CGContextTranslateCTM(context, -height, 0);
     }
