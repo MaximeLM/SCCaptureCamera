@@ -102,11 +102,11 @@
   //notification
   [[NSNotificationCenter defaultCenter] removeObserver:self name:kNotificationOrientationChange object:nil];
   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orientationDidChange:) name:kNotificationOrientationChange object:nil];
-
+/*
   _assetsLibrary = [[ALAssetsLibrary alloc] init];
   _assetGroupList = [[NSMutableArray alloc] init];
   [self loadGroupsData];
-
+*/
   __weak SCCaptureCameraController *weakself = self;
   [[NSNotificationCenter defaultCenter] addObserverForName:ALAssetsLibraryChangedNotification
                                                     object:nil
